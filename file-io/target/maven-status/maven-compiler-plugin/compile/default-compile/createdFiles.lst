@@ -1,0 +1,17 @@
+info/InfoIndexDTO.class
+workbook/WorkbookItemType.class
+file/JsonConverter.class
+file/ConvertableToJSON.class
+file/dto/FileDTO.class
+info/InfoDTO.class
+info/MapInfoDTO.class
+info/InfoCoverMapDTO.class
+module-info.class
+workbook/WorkbookItem.class
+info/InfoLayoutDTO.class
+info/INFO_TYPE.class
+workspace/WorkingSpaceDTO.class
+file/FileIO.class
+info/InfoLayoutListDTO.class
+info/InfoMainLayoutDTO.class
+workbook/WorkbookIO.class

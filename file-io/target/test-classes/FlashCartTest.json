@@ -1,0 +1,30 @@
+{	"id":0,
+	"question": {
+		"question": "Which one is a checked Exception?",
+		"id": 1,
+		"type":"exception"
+	},
+	"choiceList": [
+		{
+			"id": 1,
+			"description": "IOException"
+		},
+		{
+			"id": 2,
+			"description": "AnnotationTypeMismatchException"
+		},
+		{
+			"id": 3,
+			"description": "FileSystemAlreadyExistsException"
+		}
+	],
+	"answer": {
+		"answer": "IOException",
+		"answerId": 1,
+		"atrue": true,
+		"btrue": false,
+		"ctrue": false,
+		"dtrue": false
+		
+	}
+}
