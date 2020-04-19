@@ -14,8 +14,7 @@ public class InfoFileOps implements InfoQueuebale {
 
 	private enum SAVE {
 		YES, NO, DELETE
-	};
-
+	}
 	private ConcurrentHashMap<Integer, FileDTO<Integer, MapInfoDTO>> infoMap;
 	private FileDTO<Integer, ? extends ConvertableToJSON> info;
 	private SAVE save = SAVE.NO;
@@ -41,7 +40,7 @@ public class InfoFileOps implements InfoQueuebale {
 		try {
 			// Reads Directory and get all InfoFile:
 			final Map<Integer, FileDTO<Integer, MapInfoDTO>> infoMap = FileIO
-					.readAllInfoFiles(this.infoManager.getInfoPath());
+					.readAllInfoFiles(this.infoManager.getInfoDirectory());
 			this.infoMap.putAll(infoMap);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -70,7 +69,7 @@ public class InfoFileOps implements InfoQueuebale {
 	}
 
 	private void deleteInfoCover(Integer id) {
-		FileDTO<Integer, ConvertableToJSON> fileDTO = new FileDTO<>(id,this.infoManager.getInfoFrontCoverPath(),".json");
+		FileDTO<Integer, ConvertableToJSON> fileDTO = new FileDTO<>(id,this.infoManager.getInfoFrontCoverDirectory(),"json");
 		try {
 			FileIO.deleteFile(fileDTO);
 		} catch (IOException e) {

@@ -11,14 +11,10 @@ import java.nio.file.Paths;
 //Mange workbook unly CRUD Operations no more than that
 public class WorkbookIO {
 
-	// TODO Do later! ALL in Capslocks
-	private static final String questionDirectory = "questions"; // Directory
-	//private static final Integer ID_TEXT = 1; // Directory
-																	// for now
-																	// only
-	private static final String codeRunnerDirectory = "code";
-	private static final String imageDirectory = "img"; // Text File
-	private static final String infoDirectory = "info"; // Text File
+	private static final String QUESTIONS_DIRECTORY = "questions"; // Directory
+	private static final String CODE_RUNNER_DIRECTORY = "code";
+	private static final String IMAGE_DIRECTORY = "img"; // Text File
+	private static final String INFO_DIRECTORY = "info"; // Text File
 
 	public static void createWorkbookIfNotExists(String user, String workbookName) throws IOException{
 		Path path = Paths.get(user,workbookName);
@@ -30,20 +26,20 @@ public class WorkbookIO {
 	public static void createWorkbook(String user, String workbookName) throws IOException {
 		 
 		//Question Directory
-		String questionPathString = user + "/" + workbookName + "/" + questionDirectory;
+		String questionPathString = user + "/" + workbookName + "/" + QUESTIONS_DIRECTORY;
 		Path questionPath = Paths.get(questionPathString);
 		Files.createDirectories(questionPath);
 		
 		//Code Runner
-		Path codeRunnerPath = Paths.get(questionPathString, "..", codeRunnerDirectory);
+		Path codeRunnerPath = Paths.get(questionPathString, "..", CODE_RUNNER_DIRECTORY);
 		Files.createDirectories(codeRunnerPath);
 		
 		//Text File Directory
-		Path infoPath = Paths.get(questionPathString, "..", infoDirectory); 
+		Path infoPath = Paths.get(questionPathString, "..", INFO_DIRECTORY); 
 		Files.createDirectories(infoPath);
 		
 		//Image Directory
-		Path imagePath = Paths.get(questionPathString, "..", imageDirectory);
+		Path imagePath = Paths.get(questionPathString, "..", IMAGE_DIRECTORY);
 		Files.createDirectories(imagePath);
 	}
 

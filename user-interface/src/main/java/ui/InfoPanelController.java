@@ -170,7 +170,7 @@ public class InfoPanelController {
 		deleteButton.setVisible(true);
 		deleteButton.setDisable(true);
 		addInfoButton.setVisible(true);
-		this.infoManager.setEditMode();
+		//this.infoManager.setEditMode();
 		this.isEditable.set(true);
 	}
 
@@ -179,7 +179,7 @@ public class InfoPanelController {
 		this.ModeButton.setText("Edit");
 		deleteButton.setVisible(false);
 		addInfoButton.setVisible(false);
-		this.infoManager.setReadMode();
+		//this.infoManager.setReadMode();
 		this.isEditable.set(false);
 	}
 

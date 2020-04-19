@@ -1,6 +1,6 @@
 package model.ops;
 
-public class InfoMainLayoutOps implements InfoQueuebale{
+public class InfoMainLayoutOps implements InfoQueuebale {
 
 	@Override
 	public void run() {

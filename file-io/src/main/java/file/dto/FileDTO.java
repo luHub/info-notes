@@ -1,7 +1,5 @@
 package file.dto;
 
-
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -12,21 +10,15 @@ public class FileDTO<T, U> {
 	private Path directory;
 	private String ext;
 
-	
-	public FileDTO(){}
-	
-	//Includes Extension
-	public FileDTO(T id,Path directory, String ext){
-		this.directory = directory;
-		this.id=id;
-		this.ext = ext;
+	public FileDTO() {
 	}
 	
-	
-	//public FileDTO(T id,Path path, String ext){
-	//	this.setPath(Paths.get(path.toString(),id.toString()+"."+ext.toString()));
-	//	this.id=id;
-	//}
+	// Includes Extension
+	public FileDTO(T id, Path directory, String ext) {
+		this.directory = directory;
+		this.id = id;
+		this.ext = ext;
+	}
 
 	public T getId() {
 		return id;
@@ -34,6 +26,10 @@ public class FileDTO<T, U> {
 
 	public void setId(T id) {
 		this.id = id;
+	}
+	
+	public void setExt(String ext) {
+		this.ext = ext;
 	}
 
 	public U getContend() {
@@ -47,14 +43,13 @@ public class FileDTO<T, U> {
 	public Path getDirectory() {
 		return directory;
 	}
-	
-	public Path getPath(){
-		return Paths.get(this.directory.toString(), this.id+this.ext);
+
+	public Path getFilePath() {
+		return Paths.get(this.directory.toString(), this.id + "." + this.ext);
 	}
 
-	public void setPath(Path directory) {
+	public void setDirectory(Path directory) {
 		this.directory = directory;
 	}
 
-	
 }

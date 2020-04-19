@@ -5,8 +5,8 @@ import java.nio.file.Paths;
 
 public class User {
 
-	private String userName;
-	private String workbook;
+	private String userName = "user";
+	private String workbook = "workbook";
 	
 	public String getUserName() {
 		return userName;

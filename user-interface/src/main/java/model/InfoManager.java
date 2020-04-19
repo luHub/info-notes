@@ -1,13 +1,11 @@
 package model;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-
 import file.ConvertableToJSON;
 import file.dto.FileDTO;
 import javafx.application.Platform;
@@ -25,22 +23,19 @@ import info.InfoLayoutListDTO;
 import info.InfoMainLayoutDTO;
 import ui.InfoPanelController;
 import info.MapInfoDTO;
-import user.User;
-import workbook.WorkbookIO;
-
 
 //TODO Make all Managers Generics!
+//TODO Split into 3 different managers
+//One called UI just to manage the UI layout
+//Other called User just to to manage user
 public class InfoManager {
 
-	// TODO: Wire this to Workbook, IOC, or something like that.
-	private final String layoutConfig = "layoutConfig";
+	private UserManager userManager = new UserManager();
+	private WebModel webModel = new WebModel();
 	private final String infoCover = "infoCover";
-	private User user;
-	private boolean isModule = true;
-	// private MODE mode;
 	private final EditMode editMode = new EditMode(this);
-	// private ReadMode readMode;
 	private ListView<InfoInList> infoListView;
+	private String ext = "json";
 
 	private InfoPanelController infoPanelController;
 
@@ -51,15 +46,7 @@ public class InfoManager {
 
 	public InfoManager(InfoPanelController infoPanelController) {
 		this.infoPanelController = infoPanelController;
-		initUser();
-		initializeInfoService();
-	}
-
-	/*
-	 * Info Manager entry point, when it is created it initializes an infoService
-	 */
-	public InfoManager() {
-		initUser();
+		this.userManager.initUser();
 		initializeInfoService();
 	}
 
@@ -82,39 +69,12 @@ public class InfoManager {
 			// 2. Display it on the Info Pane
 			// TODO Add EDIT and READ MODE
 			InfoManager.this.editMode.setCurrentInfo(currentInfoFile);
-
 		}
 	};
-
-	/**
-	 * User config depends if this Component is working isolated or inside a
-	 * workbook
-	 */
-	private void initUser() {
-		if (isModule) {
-			setUser(new User());
-			getUser().setUserName("user");
-			getUser().setCurrentWorkbook("workbook");
-			try {
-				WorkbookIO.createWorkbookIfNotExists("user", "workbook");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			// TODO: Reference User Object from Workbook. This is a dangerous
-			// part so be careful with references and stuff
-			// @UserFromWorkBook (We could create this nice annotation and a
-			// custom object container)
-			// The idea is be able to use "new" and not put all our app inside
-			// not Java Core APIs.
-		}
-	}
 
 	// TODO Write Test for this method!
 	public void createNewInfoFile() {
 		// 1 Create a new Info File
-		String ext = "json";
 		// 2 Get File Last Max ID and add 1
 		List<InfoInList> iif = infoService.getInfoForList();
 		OptionalInt maxId = iif.stream().mapToInt(w -> w.getId()).max();
@@ -123,7 +83,7 @@ public class InfoManager {
 			fileId = maxId.getAsInt() + 1;
 		}
 		// 3 Config File
-		final Path INFO_PATH = Paths.get(getUser().path().toString(), "info");
+		final Path INFO_PATH = Paths.get(this.userManager.getUserPath().toString(), "info");
 		MapInfoDTO mapInfoDTO = new MapInfoDTO();
 		InfoDTO infoDTO = new InfoDTO();
 
@@ -144,60 +104,42 @@ public class InfoManager {
 		this.infoService.getLayoutFromFile();
 	}
 
-	public User getUser() {
-		return user;
+	public Path getInfoDirectory() {
+		return Paths.get(this.userManager.getUserPath().toString(), "info");
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public Path getLayoutConfigDirectory() {
+		return Paths.get(this.userManager.getUserPath().toString());
 	}
 
-	public Path getInfoPath() {
-		return Paths.get(user.path().toString(), "info");
-	}
-
-	public Path getLayoutConfigPath() {
-		return Paths.get(user.path().toString(), layoutConfig);
-	}
-
-	public Path getInfoFrontCoverPath() {
-		return Paths.get(user.path().toString(), infoCover);
+	public Path getInfoFrontCoverDirectory() {
+		return Paths.get(this.userManager.getUserPath().toString());
 	}
 
 	public InfoPanelController getInfoPanelController() {
 		return infoPanelController;
 	}
 
-	// TODO Check this!!!
-	public void setReadMode() {
-
-	}
-
-	// TODO Check this!!!
-	public void setEditMode() {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void createNewText() {
-		// 1. Get CurrentInfoDTO
-		InfoInList infoInList = this.infoListView.getSelectionModel().getSelectedItem();
-		// 2. Append a new Key Pair to its end
-		FileDTO<Integer, MapInfoDTO> currentInfoFile = (FileDTO<Integer, MapInfoDTO>) infoService.getInfoMap()
-				.get(infoInList.getId());
-		// TODO a List would be better than a map, do the refactor!
-		int mapLastId = currentInfoFile.getContend().getMap().keySet().size();
-		InfoDTO infoDTO = new InfoDTO();
-		infoDTO.setType(INFO_TYPE.TEXT);
-		// TODO to Regionalization no crazy Strings!
-		infoDTO.setText("Add text here");
-		currentInfoFile.getContend().getMap().put(mapLastId + 1, infoDTO);
-		// TODO Check this part used UPDATE_IO instead of DELETE/CREATE
-		// 3. Save File
-		this.infoService.deleteFile(currentInfoFile, true);
-		this.infoService.addInfoFileToSave(currentInfoFile, true);
-		// 4. UpdateDisplay
 		Platform.runLater(() -> {
+			//FIXME check why path and directory are mixed for currentInfoFile?
+			// 1. Get CurrentInfoDTO
+			InfoInList infoInList = this.infoListView.getSelectionModel().getSelectedItem();
+			// 2. Append a new Key Pair to its end
+			FileDTO<Integer, MapInfoDTO> currentInfoFile = infoService.getInfoMap()
+					.get(infoInList.getId());
+			// TODO a List would be better than a map, do the refactor!
+			int mapLastId = currentInfoFile.getContend().getMap().keySet().size();
+			InfoDTO infoDTO = new InfoDTO();
+			infoDTO.setType(INFO_TYPE.TEXT);
+			// TODO to Regionalization no crazy Strings!
+			infoDTO.setText("Add text here");
+			currentInfoFile.getContend().getMap().put(mapLastId + 1, infoDTO);
+			// TODO Check this part used UPDATE_IO instead of DELETE/CREATE
+			// 3. Save File
+			this.infoService.deleteFile(currentInfoFile, true);
+			this.infoService.addInfoFileToSave(currentInfoFile, true);
+			// 4. UpdateDisplay
 			this.editMode.setCurrentInfo(currentInfoFile);
 		});
 	}
@@ -224,11 +166,11 @@ public class InfoManager {
 
 	public void deleteFile() {
 		// 1. Current File Path
-		final Path INFO_PATH = Paths.get(getUser().path().toString(), "info");
+		final Path INFO_PATH = Paths.get(this.userManager.getUserPath().toString(), "info");
 		// 2. Id Path
 		InfoInList infoInList = this.infoListView.getSelectionModel().getSelectedItem();
 		// 3. Create FileDTO
-		FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO<>(infoInList.getId(),INFO_PATH,".json");
+		FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO<>(infoInList.getId(), INFO_PATH, this.ext);
 		this.infoService.deleteFile(fileDTO, false);
 	}
 
@@ -250,27 +192,7 @@ public class InfoManager {
 	}
 
 	public void createNewWebView() {
-		// TODO Auto-generated method stub
-		// 1. Get CurrentInfoDTO
-		InfoInList infoInList = this.infoListView.getSelectionModel().getSelectedItem();
-		// 2. Append a new Key Pair to its end
-		FileDTO<Integer, MapInfoDTO> currentInfoFile = (FileDTO<Integer, MapInfoDTO>) infoService.getInfoMap()
-				.get(infoInList.getId());
-		// TODO a List would be better than a map, do the refactor!
-		int mapLastId = currentInfoFile.getContend().getMap().keySet().size();
-		InfoDTO infoDTO = new InfoDTO();
-		infoDTO.setType(INFO_TYPE.WEB);
-		// TODO add a default no connection web page
-		infoDTO.setText("https://www.google.com");
-		currentInfoFile.getContend().getMap().put(mapLastId + 1, infoDTO);
-		// TODO Check this part used UPDATE_IO instead of DELETE/CREATE
-		// 3. Save File
-		this.infoService.deleteFile(currentInfoFile, true);
-		this.infoService.addInfoFileToSave(currentInfoFile, true);
-		// 4. UpdateDisplay
-		Platform.runLater(() -> {
-			this.editMode.setCurrentInfo(currentInfoFile);
-		});
+		webModel.createNewWebView(this.infoListView, this.infoService, this.editMode);
 	}
 
 	// Layout Config if this scales to much use another class:
@@ -282,7 +204,7 @@ public class InfoManager {
 		infoLayoutDTO.setInfoId(id);
 		infoLayoutDTO.setInfoFileId(infoInList.getId());
 		infoLayoutDTO.setHeight(heightDefault);
-		FileDTO<Integer, InfoLayoutListDTO> layoutFile = infoService.getLayoutInfo();
+		FileDTO<String, InfoLayoutListDTO> layoutFile = infoService.getLayoutInfo();
 
 		Optional<InfoLayoutDTO> optInfoLayoutDTO = layoutFile.getContend().getInfoLayoutList().stream()
 				.filter(x -> x.getInfoFileId().equals(infoInList.getId()) && x.getInfoId().equals(id)).findFirst();
@@ -344,8 +266,7 @@ public class InfoManager {
 	}
 
 	public void updateDividerPosition(float floatValue) {
-		// TODO Auto-generated method stub
 		System.out.println("Update divier position!");
-		
 	}
+
 }

@@ -30,7 +30,7 @@ public class InfoService<V> extends Service<V> {
 
 	private final ConcurrentHashMap<Integer, FileDTO<Integer, MapInfoDTO>> infoMap = new ConcurrentHashMap<Integer, FileDTO<Integer, MapInfoDTO>>();
 	
-	private final FileDTO<Integer, InfoLayoutListDTO> layoutFile =  new FileDTO<Integer, InfoLayoutListDTO>();
+	private final FileDTO<String, InfoLayoutListDTO> layoutFile =  new FileDTO<String, InfoLayoutListDTO>();
 	
 	private final FileDTO<Integer, InfoMainLayoutDTO> mainLayoutFile = new FileDTO<Integer,InfoMainLayoutDTO>(); 
 	
@@ -208,7 +208,7 @@ public class InfoService<V> extends Service<V> {
 	}
 	
 	//TODO CONTINUE WORKING HERE!!!
-	private InfoMainLayoutOps prepareMainLayoutFileOps(){
+	private InfoMainLayoutOps prepareMainLayoutFileOps() {
 		return null;
 	}
 
@@ -216,7 +216,7 @@ public class InfoService<V> extends Service<V> {
 		return infoMap;
 	}
 
-	public FileDTO<Integer, InfoLayoutListDTO> getLayoutInfo() {
+	public FileDTO<String, InfoLayoutListDTO> getLayoutInfo() {
 		return this.layoutFile;
 	}
 

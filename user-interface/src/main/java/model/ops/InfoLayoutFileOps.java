@@ -14,8 +14,8 @@ import info.InfoLayoutListDTO;
 //This will be called on selection of each INFO DTO
 public class InfoLayoutFileOps implements InfoQueuebale {
 	
-	private enum SAVE{ YES , NO,DELETE};
-	private FileDTO<Integer,InfoLayoutListDTO> layoutFile; 
+	private enum SAVE{ YES , NO,DELETE}	
+	private FileDTO<String,InfoLayoutListDTO> layoutFile; 
 	private List<InfoInList> infoForList;
 	private SAVE save=SAVE.NO;
 	private InfoManager infoManager;
@@ -39,10 +39,11 @@ public class InfoLayoutFileOps implements InfoQueuebale {
 		//Get all from direcotry
 		try {
 			InfoLayoutListDTO updatedLayoutDTO;
-			this.layoutFile.setId(1);
-			this.layoutFile.setPath(this.infoManager.getLayoutConfigPath());
-			if (Files.exists(this.infoManager.getLayoutConfigPath())){
-			updatedLayoutDTO = FileIO.readFile(this.infoManager.getLayoutConfigPath(),InfoLayoutListDTO.class);
+			this.layoutFile.setId("layoutConfig");
+			this.layoutFile.setExt("json");
+			this.layoutFile.setDirectory(this.infoManager.getLayoutConfigDirectory());
+			if (Files.exists(this.infoManager.getLayoutConfigDirectory())){
+			updatedLayoutDTO = FileIO.readFile(this.layoutFile.getFilePath(),InfoLayoutListDTO.class);
 			//layoutFile Reference is Updated
 			this.layoutFile.setContend(updatedLayoutDTO);
 			}
@@ -64,12 +65,12 @@ public class InfoLayoutFileOps implements InfoQueuebale {
 		this.infoManager=infoManager;
 	}
 
-	public void setLayoutFile(FileDTO<Integer, InfoLayoutListDTO> layoutFile) {
+	public void setLayoutFile(FileDTO<String, InfoLayoutListDTO> layoutFile) {
 		this.layoutFile=layoutFile;
 	}
 	
 	
-	public void updateInfoToFile(FileDTO<Integer, InfoLayoutListDTO> layoutFile) {
+	public void updateInfoToFile(FileDTO<String, InfoLayoutListDTO> layoutFile) {
 		save=save.YES;
 		this.layoutFile=layoutFile;
 	}

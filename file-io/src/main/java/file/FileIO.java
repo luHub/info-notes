@@ -19,14 +19,14 @@ import info.MapInfoDTO;
 
 public class FileIO {
 
-	//TODO tEst this method!
-	public static void createFile(FileDTO<Integer, ? extends ConvertableToJSON> file) throws IOException {
-		if (Files.exists(file.getDirectory())) {
-			Files.delete(file.getPath());
+	// TODO A tEst this method!
+	public static <T> void createFile(FileDTO<T, ? extends ConvertableToJSON> file) throws IOException {
+		if (Files.exists(file.getFilePath())) {
+			Files.delete(file.getFilePath());
 		}
-		Files.createFile(file.getPath());
+		Files.createFile(file.getFilePath());
 		Charset charset = Charset.forName("US-ASCII");
-		BufferedWriter writer = Files.newBufferedWriter(file.getPath(), charset);
+		BufferedWriter writer = Files.newBufferedWriter(file.getFilePath(), charset);
 		String jsonInString = JsonConverter.convertToJson(file.getContend());
 		writer.write(jsonInString, 0, jsonInString.length());
 		writer.flush();
@@ -53,7 +53,7 @@ public class FileIO {
 			MapInfoDTO mapInfoDTO = readFile(name, MapInfoDTO.class);
 			// Extract Id from FileName:
 			Integer id = Integer.valueOf(name.getFileName().toString().replace(".json", ""));
-			FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO<>(id, name,".json");
+			FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO<>(id, name, "json");
 			fileDTO.setContend(mapInfoDTO);
 			allFiles.put(fileDTO.getId(), fileDTO);
 		}
@@ -61,7 +61,7 @@ public class FileIO {
 	}
 
 	public static boolean deleteFile(FileDTO fileDTO) throws IOException {
-		Path path = fileDTO.getPath();
+		Path path = fileDTO.getFilePath();
 		if (Files.exists(path)) {
 			Files.delete(path);
 			return true;

@@ -203,8 +203,8 @@ public class FilesTest {
 		infoLayoutDTO.setInfoId(1);
 		infoLayoutDTO.setInfoFileId(1);
 		illDTO.getInfoLayoutList().add(infoLayoutDTO);
-		FileDTO fileDTO = new FileDTO<Integer,InfoLayoutListDTO>(0,infoPath,".json");
-		fileDTO.setPath(infoPath);
+		FileDTO fileDTO = new FileDTO<Integer,InfoLayoutListDTO>(0,infoPath,"json");
+		fileDTO.setDirectory(infoPath);
 		fileDTO.setContend(illDTO);
 		//InfoIO.createLayoutInfoFile(fileDTO);
 		FileIO.createFile(fileDTO);
