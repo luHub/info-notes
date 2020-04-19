@@ -96,6 +96,7 @@ public class InfoManager {
 		infoService.addInfoFileToSave(fileDTO, false);
 	}
 
+	//TODO move to initialization class (a class to create)
 	private void initializeInfoService() {
 		this.infoService.setInfoManager(this);
 		this.infoService.start();
