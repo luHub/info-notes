@@ -191,6 +191,7 @@ public class InfoService<V> extends Service<V> {
 		}
 	}
 
+	//TODO Check this!
 	private InfoFileOps prepateFileOps() {
 		InfoFileOps infoFileOps = new InfoFileOps();
 		//infoFileOps.setInfoFromList(this.infoForList);
@@ -207,7 +208,7 @@ public class InfoService<V> extends Service<V> {
 			
 	}
 	
-	//TODO CONTINUE WORKING HERE!!!
+
 	private InfoMainLayoutOps prepareMainLayoutFileOps() {
 		return null;
 	}

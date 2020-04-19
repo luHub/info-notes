@@ -45,15 +45,15 @@ public class FileIO {
 		return JsonConverter.convertToObject(stringFromFile.toString(), classType);
 	}
 
-	public static Map<Integer, FileDTO<Integer, MapInfoDTO>> readAllInfoFiles(Path path)
+	public static Map<Integer, FileDTO<Integer, MapInfoDTO>> readAllInfoFiles(Path directory)
 			throws JsonParseException, JsonMappingException, IOException {
 		Map<Integer, FileDTO<Integer, MapInfoDTO>> allFiles = new HashMap<>();
-		DirectoryStream<Path> dirs = Files.newDirectoryStream(path);
+		DirectoryStream<Path> dirs = Files.newDirectoryStream(directory);
 		for (Path name : dirs) {
 			MapInfoDTO mapInfoDTO = readFile(name, MapInfoDTO.class);
 			// Extract Id from FileName:
 			Integer id = Integer.valueOf(name.getFileName().toString().replace(".json", ""));
-			FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO<>(id, name, "json");
+			FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO<>(id, directory, "json");
 			fileDTO.setContend(mapInfoDTO);
 			allFiles.put(fileDTO.getId(), fileDTO);
 		}

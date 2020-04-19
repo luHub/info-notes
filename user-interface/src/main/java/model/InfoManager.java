@@ -122,7 +122,6 @@ public class InfoManager {
 
 	public void createNewText() {
 		Platform.runLater(() -> {
-			//FIXME check why path and directory are mixed for currentInfoFile?
 			// 1. Get CurrentInfoDTO
 			InfoInList infoInList = this.infoListView.getSelectionModel().getSelectedItem();
 			// 2. Append a new Key Pair to its end

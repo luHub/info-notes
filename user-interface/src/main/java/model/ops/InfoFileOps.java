@@ -36,6 +36,7 @@ public class InfoFileOps implements InfoQueuebale {
 
 	// This methods Updates and initialize the IU.
 	// TODO Do this method more granular, it is inefficient but it works ok.
+	// Not all "updates" should trigger it...
 	private void updateAllInfoFromFiles() {
 		try {
 			// Reads Directory and get all InfoFile:
