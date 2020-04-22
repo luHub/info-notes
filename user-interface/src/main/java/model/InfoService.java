@@ -1,8 +1,8 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
@@ -14,7 +14,6 @@ import javafx.concurrent.Task;
 import model.ops.InfoCoverFileOps;
 import model.ops.InfoFileOps;
 import model.ops.InfoLayoutFileOps;
-import model.ops.InfoMainLayoutOps;
 import model.ops.InfoQueuebale;
 import info.InfoLayoutDTO;
 import info.InfoLayoutListDTO;
@@ -23,8 +22,6 @@ import info.MapInfoDTO;
 
 
 
-//TODO Refactor to generic 
-//TODO Change Lists to Sets
 //TODO Reduce Code as much as possible to make it generic as possible
 public class InfoService<V> extends Service<V> {
 
@@ -34,11 +31,9 @@ public class InfoService<V> extends Service<V> {
 	
 	private final FileDTO<Integer, InfoMainLayoutDTO> mainLayoutFile = new FileDTO<Integer,InfoMainLayoutDTO>(); 
 	
-	protected final Queue<InfoQueuebale> queue = new ConcurrentLinkedQueue();
+	protected final Queue<InfoQueuebale> queue = new ConcurrentLinkedQueue<InfoQueuebale>();
 	
-	//REmove this list is no longer needed
-	@Deprecated
-	private final List<InfoInList> infoForList = new ArrayList();
+	private final Set<InfoInList> infoForList = new LinkedHashSet<InfoInList>();
 	private InfoManager infoManager;
 
 	@Override
@@ -93,23 +88,19 @@ public class InfoService<V> extends Service<V> {
 		this.infoManager = infoManager;
 	}
 
-	public List<InfoInList> getInfoForList() {
+	public Set<InfoInList> getInfoForList() {
 		return this.infoForList;
 	}
 
 	//TODO REFACTOR FOR UPDATE, DELETE AND CREATE
-	//TODO REMOVE infoForList
 	public void addInfoFileToSave(FileDTO<Integer,? extends ConvertableToJSON> fileDTO, boolean isUpdate) {
 		
-		//TODO List Should Only Update on FileDelete or Create and not
-		//For InfoUpdate
+		//TODO List Should Only Update on FileDelete or Create and not for info updates
 		synchronized (queue) {
 			// Add work to the queue
 			InfoFileOps infoFileOps = new InfoFileOps();
-			//infoFileOps.setInfoFromList(this.getInfoForList());
 			infoFileOps.setInfoMap(this.infoMap);
 			infoFileOps.setInfoManager(this.infoManager);
-			//infoFileOps.setInfoFromList(infoForList);
 			infoFileOps.updateInfoToFile(fileDTO);
 			queue.add(infoFileOps);
 			// Notify the monitor object that all the threads
@@ -131,9 +122,9 @@ public class InfoService<V> extends Service<V> {
 	public void addInfoLayoutToSave(InfoLayoutDTO infoLayotDTO) {
 		synchronized (queue) {
 			//TODO FIX ALL THIS
-			InfoLayoutFileOps infoLayoutFileOps = prepareLayoutFileOps();
+			final InfoLayoutFileOps infoLayoutFileOps = prepareLayoutFileOps();
 			
-			final List<InfoLayoutDTO> layoutDTO = this.layoutFile.getContend().getInfoLayoutList().stream()
+			final var layoutDTO = this.layoutFile.getContend().getInfoLayoutList().stream()
 					.filter(x -> (x.getInfoFileId().equals(infoLayotDTO.getInfoFileId())
 				&& x.getInfoId().equals(infoLayotDTO.getInfoId()))).collect(Collectors.toList());
 			
@@ -191,10 +182,8 @@ public class InfoService<V> extends Service<V> {
 		}
 	}
 
-	//TODO Check this!
 	private InfoFileOps prepateFileOps() {
 		InfoFileOps infoFileOps = new InfoFileOps();
-		//infoFileOps.setInfoFromList(this.infoForList);
 		infoFileOps.setInfoMap(this.infoMap);
 		infoFileOps.setInfoManager(this.infoManager);
 		return infoFileOps;
@@ -207,11 +196,7 @@ public class InfoService<V> extends Service<V> {
 		return infoLayoutFileOps; 
 			
 	}
-	
 
-	private InfoMainLayoutOps prepareMainLayoutFileOps() {
-		return null;
-	}
 
 	public ConcurrentHashMap<Integer, FileDTO<Integer, MapInfoDTO>> getInfoMap() {
 		return infoMap;

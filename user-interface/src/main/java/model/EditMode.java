@@ -54,7 +54,6 @@ public class EditMode {
 	}
 
 	private void loadWebPane(Integer id, InfoInList infoInList, InfoDTO infoDTO) {
-		// TODO Auto-generated method stub
 		Loader loader = new Loader();
 		WebViewAreaController itac = loader.addWebArea(this.infoManager.getInfoPanelController().getDisplayVBox(),infoManager);
 		itac.setInfoDTO(id,infoInList, infoDTO);

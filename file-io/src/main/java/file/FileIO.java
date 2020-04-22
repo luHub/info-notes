@@ -19,7 +19,6 @@ import info.MapInfoDTO;
 
 public class FileIO {
 
-	// TODO A tEst this method!
 	public static <T> void createFile(FileDTO<T, ? extends ConvertableToJSON> file) throws IOException {
 		if (Files.exists(file.getFilePath())) {
 			Files.delete(file.getFilePath());

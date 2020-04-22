@@ -7,7 +7,7 @@ module com.heguer.info.userinterface {
 
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
-	requires com.heguer.info.fileio;
+	requires transitive com.heguer.info.fileio;
 	requires com.heguer.info.user;
 	requires javafx.base;
 	requires javafx.controls;

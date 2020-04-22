@@ -15,6 +15,7 @@ public class InfoFileOps implements InfoQueuebale {
 	private enum SAVE {
 		YES, NO, DELETE
 	}
+
 	private ConcurrentHashMap<Integer, FileDTO<Integer, MapInfoDTO>> infoMap;
 	private FileDTO<Integer, ? extends ConvertableToJSON> info;
 	private SAVE save = SAVE.NO;
@@ -57,8 +58,6 @@ public class InfoFileOps implements InfoQueuebale {
 		}
 	}
 
-	
-
 	private void deleteInfo() {
 		try {
 			FileIO.deleteFile(this.info);
@@ -70,7 +69,8 @@ public class InfoFileOps implements InfoQueuebale {
 	}
 
 	private void deleteInfoCover(Integer id) {
-		FileDTO<Integer, ConvertableToJSON> fileDTO = new FileDTO<>(id,this.infoManager.getInfoFrontCoverDirectory(),"json");
+		FileDTO<Integer, ConvertableToJSON> fileDTO = new FileDTO<>(id, this.infoManager.getInfoFrontCoverDirectory(),
+				"json");
 		try {
 			FileIO.deleteFile(fileDTO);
 		} catch (IOException e) {
@@ -78,8 +78,6 @@ public class InfoFileOps implements InfoQueuebale {
 			e.printStackTrace();
 		}
 	}
-
-	
 
 	public void setInfoManager(InfoManager infoManager) {
 		this.infoManager = infoManager;
@@ -95,7 +93,7 @@ public class InfoFileOps implements InfoQueuebale {
 	}
 
 	// TODO: Add to Ops Interface
-	public void setFileToDelete(FileDTO<Integer,? extends ConvertableToJSON> fileDTO) {
+	public void setFileToDelete(FileDTO<Integer, ? extends ConvertableToJSON> fileDTO) {
 		save = SAVE.DELETE;
 		this.info = fileDTO;
 	}
@@ -104,6 +102,5 @@ public class InfoFileOps implements InfoQueuebale {
 		// TODO Auto-generated method stub
 		save = save.YES;
 	}
-
 
 }

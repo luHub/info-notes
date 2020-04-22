@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import file.ConvertableToJSON;
@@ -23,14 +24,12 @@ public class InfoCoverFileOps implements InfoQueuebale {
 	private CRUD crud = CRUD.READ;
 	private InfoManager infoManager;
 	private InfoCoverMapDTO infoCoverMapDTO = new InfoCoverMapDTO(); 
-	private ConcurrentHashMap<Integer, FileDTO<Integer, MapInfoDTO>> infoMap;
 	
 	private String infoCover = "infoCover";
 
-	public InfoCoverFileOps(InfoManager infoManager, List<InfoInList> infoForList,
+	public InfoCoverFileOps(InfoManager infoManager, Set<InfoInList> infoForList,
 			ConcurrentHashMap<Integer, FileDTO<Integer, MapInfoDTO>> infoMap) {
 		this.infoManager = infoManager;
-		this.infoMap = infoMap;
 
 		if(!infoForList.isEmpty())
 		for(InfoInList infoInList:infoForList){
@@ -75,7 +74,7 @@ public class InfoCoverFileOps implements InfoQueuebale {
 	}
 
 	private void delete() {
-		final FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO(0, this.infoManager.getInfoFrontCoverDirectory(),"json");
+		final var fileDTO = new FileDTO<Integer, MapInfoDTO>(0, this.infoManager.getInfoFrontCoverDirectory(),"json");
 		try {
 			FileIO.deleteFile(fileDTO);
 		} catch (IOException e) {
@@ -86,31 +85,27 @@ public class InfoCoverFileOps implements InfoQueuebale {
 	}
 
 	private void update() {
+		//TODO do this more granular
 		delete();
 		create();
 	}
 
 	private void read() {
 		this.infoCoverMapDTO.getInfoCovers().clear();
-		// TODO Refactor this part because it is horrible:
-		// Reads info index (this is the info that will be displayed in the list such like title and order
-		if (Files.exists(this.infoManager.getInfoFrontCoverDirectory())) {
+		final var coverFile = new FileDTO<>(this.infoCover,this.infoManager.getInfoFrontCoverDirectory(),"json");
+		if (Files.exists(coverFile.getFilePath())) {
 			try {
-				final FileDTO<String, InfoCoverMapDTO> fileDTO = new FileDTO<>(this.infoCover,this.infoManager.getInfoFrontCoverDirectory(),"json");
-				this.infoCoverMapDTO = FileIO.readFile(fileDTO.getFilePath(),
+				this.infoCoverMapDTO = FileIO.readFile(coverFile.getFilePath(),
 						InfoCoverMapDTO.class);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
-			// TODO In case the file does not exist create the list from
-			// infoMap.
-			
 			//Read all files from folder
 			Map<Integer, FileDTO<Integer, MapInfoDTO>> files;
 			try {
-				files = FileIO.readAllInfoFiles(infoManager.getInfoDirectory());
+				files = FileIO.readAllInfoFiles(coverFile.getDirectory());
 				files.forEach((k, v) -> {
 					InfoIndexDTO infoListItem = new InfoIndexDTO(v.getId());
 					infoListItem.setTitle("INFO");
@@ -126,9 +121,9 @@ public class InfoCoverFileOps implements InfoQueuebale {
 
 	private void create() {
 		try {
-			final FileDTO<String, InfoCoverMapDTO> fileDTO = new FileDTO<>(this.infoCover,this.infoManager.getInfoFrontCoverDirectory(),"json");
-			fileDTO.setContend(this.infoCoverMapDTO);
-			FileIO.createFile(fileDTO);
+			final var coverFile = new FileDTO<String, InfoCoverMapDTO>(this.infoCover,this.infoManager.getInfoFrontCoverDirectory(),"json");
+			coverFile.setContend(this.infoCoverMapDTO);
+			FileIO.createFile(coverFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

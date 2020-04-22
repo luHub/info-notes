@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Set;
+
 import file.ConvertableToJSON;
 import file.dto.FileDTO;
 import javafx.application.Platform;
@@ -24,7 +26,6 @@ import info.InfoMainLayoutDTO;
 import ui.InfoPanelController;
 import info.MapInfoDTO;
 
-//TODO Make all Managers Generics!
 //TODO Split into 3 different managers
 //One called UI just to manage the UI layout
 //Other called User just to to manage user
@@ -32,7 +33,6 @@ public class InfoManager {
 
 	private UserManager userManager = new UserManager();
 	private WebModel webModel = new WebModel();
-	private final String infoCover = "infoCover";
 	private final EditMode editMode = new EditMode(this);
 	private ListView<InfoInList> infoListView;
 	private String ext = "json";
@@ -76,7 +76,7 @@ public class InfoManager {
 	public void createNewInfoFile() {
 		// 1 Create a new Info File
 		// 2 Get File Last Max ID and add 1
-		List<InfoInList> iif = infoService.getInfoForList();
+		Set<InfoInList> iif = infoService.getInfoForList();
 		OptionalInt maxId = iif.stream().mapToInt(w -> w.getId()).max();
 		int fileId = 0;
 		if (maxId.isPresent()) {
@@ -84,19 +84,19 @@ public class InfoManager {
 		}
 		// 3 Config File
 		final Path INFO_PATH = Paths.get(this.userManager.getUserPath().toString(), "info");
-		MapInfoDTO mapInfoDTO = new MapInfoDTO();
-		InfoDTO infoDTO = new InfoDTO();
+		var mapInfoDTO = new MapInfoDTO();
+		var infoDTO = new InfoDTO();
 
 		infoDTO.setText("Insert Text Here");
 		infoDTO.setType(INFO_TYPE.TEXT);
 		mapInfoDTO.getMap().put(0, infoDTO);
 		mapInfoDTO.setTitle("INFO");
-		FileDTO<Integer, ConvertableToJSON> fileDTO = new FileDTO<Integer, ConvertableToJSON>(fileId, INFO_PATH, ext);
+		var fileDTO = new FileDTO<Integer, ConvertableToJSON>(fileId, INFO_PATH, ext);
 		fileDTO.setContend(mapInfoDTO);
 		infoService.addInfoFileToSave(fileDTO, false);
 	}
 
-	//TODO move to initialization class (a class to create)
+	// TODO move to initialization class (a class to create)
 	private void initializeInfoService() {
 		this.infoService.setInfoManager(this);
 		this.infoService.start();
@@ -124,13 +124,12 @@ public class InfoManager {
 	public void createNewText() {
 		Platform.runLater(() -> {
 			// 1. Get CurrentInfoDTO
-			InfoInList infoInList = this.infoListView.getSelectionModel().getSelectedItem();
+			var infoInList = this.infoListView.getSelectionModel().getSelectedItem();
 			// 2. Append a new Key Pair to its end
-			FileDTO<Integer, MapInfoDTO> currentInfoFile = infoService.getInfoMap()
-					.get(infoInList.getId());
+			FileDTO<Integer, MapInfoDTO> currentInfoFile = infoService.getInfoMap().get(infoInList.getId());
 			// TODO a List would be better than a map, do the refactor!
 			int mapLastId = currentInfoFile.getContend().getMap().keySet().size();
-			InfoDTO infoDTO = new InfoDTO();
+			var infoDTO = new InfoDTO();
 			infoDTO.setType(INFO_TYPE.TEXT);
 			// TODO to Regionalization no crazy Strings!
 			infoDTO.setText("Add text here");
@@ -147,8 +146,7 @@ public class InfoManager {
 	public void deleteInfo() {
 		if (lastInfoIdSelected != null && lastInfoInListSelected != null) {
 			// 1. Get FileDTO
-			FileDTO<Integer, MapInfoDTO> currentInfoFile = (FileDTO<Integer, MapInfoDTO>) infoService.getInfoMap()
-					.get(lastInfoInListSelected.getId());
+			FileDTO<Integer, MapInfoDTO> currentInfoFile = infoService.getInfoMap().get(lastInfoInListSelected.getId());
 			// 2. Remove Info
 			currentInfoFile.getContend().getMap().remove(lastInfoIdSelected);
 			// 3. Update FileDTO
@@ -170,7 +168,7 @@ public class InfoManager {
 		// 2. Id Path
 		InfoInList infoInList = this.infoListView.getSelectionModel().getSelectedItem();
 		// 3. Create FileDTO
-		FileDTO<Integer, MapInfoDTO> fileDTO = new FileDTO<>(infoInList.getId(), INFO_PATH, this.ext);
+		var fileDTO = new FileDTO<Integer, MapInfoDTO>(infoInList.getId(), INFO_PATH, this.ext);
 		this.infoService.deleteFile(fileDTO, false);
 	}
 
@@ -181,8 +179,7 @@ public class InfoManager {
 
 	public void updateInfo(Integer id, InfoInList infoInList, InfoDTO infoDTO) {
 		// 1. Get FileDTO
-		FileDTO<Integer, MapInfoDTO> currentInfoFile = (FileDTO<Integer, MapInfoDTO>) infoService.getInfoMap()
-				.get(infoInList.getId());
+		FileDTO<Integer, MapInfoDTO> currentInfoFile = infoService.getInfoMap().get(infoInList.getId());
 		// 2. Remove Info
 		currentInfoFile.getContend().getMap().get(id).setText(infoDTO.getText());
 		// 3. Update FileDTO
@@ -195,12 +192,12 @@ public class InfoManager {
 		webModel.createNewWebView(this.infoListView, this.infoService, this.editMode);
 	}
 
-	// Layout Config if this scales to much use another class:
+	//TODO create laoyut manager Layout Config if this scales to much use another class:
 	public InfoLayoutDTO readInfoLayoutDTO(Integer id, InfoInList infoInList) {
 
 		final double heightDefault = 30.0;
 
-		InfoLayoutDTO infoLayoutDTO = new InfoLayoutDTO();
+		var infoLayoutDTO = new InfoLayoutDTO();
 		infoLayoutDTO.setInfoId(id);
 		infoLayoutDTO.setInfoFileId(infoInList.getId());
 		infoLayoutDTO.setHeight(heightDefault);
@@ -212,9 +209,8 @@ public class InfoManager {
 		return optInfoLayoutDTO.isPresent() ? optInfoLayoutDTO.get() : infoLayoutDTO;
 
 	}
-
+	//TODO Create layout mananger
 	public void updateInfoLayoutDTO(InfoLayoutDTO infoLayotDTO) {
-
 		this.infoService.addInfoLayoutToSave(infoLayotDTO);
 	}
 
@@ -248,9 +244,8 @@ public class InfoManager {
 			infoListView.getSelectionModel().selectedItemProperty().addListener(managerListener);
 		});
 	}
-
+	//TODO move to layout manager
 	public InfoMainLayoutDTO readMainLayoutDTO() {
-		// TODO Auto-generated method stub
 		InfoMainLayoutDTO infoMainLayoutDTO = new InfoMainLayoutDTO();
 		FileDTO<Integer, InfoMainLayoutDTO> layoutFile = infoService.getMainLayoutInfo();
 
